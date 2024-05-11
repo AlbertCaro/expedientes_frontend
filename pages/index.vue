@@ -1,88 +1,118 @@
 <template>
   <v-row justify="center" align="center">
+
     <v-col cols="12" sm="8" md="6">
-      <v-card class="logo py-4 d-flex justify-center">
-        <NuxtLogo />
-        <VuetifyLogo />
-      </v-card>
-      <v-card>
-        <v-card-title class="headline">
-          {{ $t("welcome") }}
-        </v-card-title>
-        <v-card-text>
-          <p>
-            Vuetify is a progressive Material Design component framework for
-            Vue.js. It was designed to empower developers to create amazing
-            applications. 
-          </p>
-          <p>
-            For more information on Vuetify, check out the
-            <a
-              href="https://vuetifyjs.com"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              documentation </a
-            >.
-          </p>
-          <p>
-            If you have questions, please join the official
-            <a
-              href="https://chat.vuetifyjs.com/"
-              target="_blank"
-              rel="noopener noreferrer"
-              title="chat"
-            >
-              discord </a
-            >.
-          </p>
-          <p>
-            Find a bug? Report it on the github
-            <a
-              href="https://github.com/vuetifyjs/vuetify/issues"
-              target="_blank"
-              rel="noopener noreferrer"
-              title="contribute"
-            >
-              issue board </a
-            >.
-          </p>
-          <p>
-            Thank you for developing with Vuetify and I look forward to bringing
-            more exciting features in the future.
-          </p>
-          <div class="text-xs-right">
-            <em><small>&mdash; John Leider</small></em>
-          </div>
-          <hr class="my-3" />
-          <a
-            href="https://nuxtjs.org/"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Nuxt Documentation
-          </a>
-          <br />
-          <a
-            href="https://github.com/nuxt/nuxt.js"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Nuxt GitHub
-          </a>
-        </v-card-text>
-        <v-card-actions>
-          <v-spacer />
-          <v-btn color="primary" nuxt to="/inspire"> Continue </v-btn>
-        </v-card-actions>
-      </v-card>
+      <v-form ref="formGuardado" 
+        :isValid="false" 
+        @submit.prevent="(modoEdicion) ? actualizarInstitucion() : guardarInstitucion()"
+      >
+          <v-text-field 
+            v-model="institucionFormulario.nombre" 
+            label="Titulo"
+            :rules="[$validations.required]"
+          />
+          <v-text-field
+            v-model="institucionFormulario.descripcion"
+            label="Descripción"
+            :rules="[$validations.required]"
+          />
+          <v-select
+            v-model="institucionFormulario.tipo"
+            label="Tipo"
+            :items="tiposOpciones"
+            :rules="[$validations.required]"
+          />
+          <v-row>
+            <v-spacer/>
+            <v-btn type="submit">Guardar</v-btn>
+          </v-row>
+      </v-form>
+
+      <v-row>
+        <InstitucionCard 
+        v-for="(institucion, i) in instituciones" 
+        v-bind="institucion"
+        :index="i"
+      />
+      </v-row>
     </v-col>
   </v-row>
 </template>
 
-<script>
+<script lang="ts">
 export default {
   name: 'IndexPage',
+
+  data: function () {
+    return {
+      modoEdicion: false,
+      institucionFormulario: {
+        nombre: "",
+        descripcion: "",
+        tipo: ""
+      },
+      tiposOpciones: [
+        "Universidad",
+        "Preparatoria",
+        "Primaria",
+        "Secundaria"
+      ],
+      instituciones: [
+        {
+          nombre: "Cuvalles",
+          descripcion: "Ameca",
+          tipo: "Universidad"
+        },
+        {
+          nombre: "CULagos",
+          descripcion: "Ocotlán",
+          tipo: "Preparatoria"
+        },
+        {
+          nombre: "CUCEI",
+          descripcion: "Guadalajara",
+          tipo: "Primaria"
+        },
+      ],
+    }
+  },
+
+  beforeMount() {
+    this.$nuxt.$on('eliminar-institucion', (index) => {
+      this.instituciones.splice(index, 1)
+    })
+
+    
+    this.$nuxt.$on('actualizar-institucion', (index) => {
+      this.institucionFormulario = this.instituciones[index]
+      this.modoEdicion = true
+    })
+  },
+
+  methods: {
+      guardarInstitucion () {
+        const isValid = this.$refs.formGuardado.validate()
+
+        if (!isValid) return
+
+        const objetoAGuardar = Object.assign({}, this.institucionFormulario)
+
+        this.instituciones.push(objetoAGuardar)
+
+        this.$refs.formGuardado.reset()
+      },
+
+      actualizarInstitucion () {
+        console.log('x')
+        const isValid = this.$refs.formGuardado.validate()
+
+        if (!isValid) return
+
+        this.institucionFormulario = Object.assign({}, this.institucionFormulario)
+        this.$refs.formGuardado.reset()
+        this.modoEdicion = false
+      }
+  }
 }
 </script>
 
