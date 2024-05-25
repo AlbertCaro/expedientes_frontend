@@ -18,12 +18,13 @@
                     </v-btn>
                 </v-card-title>
                 <v-card-subtitle>
-                    <v-data-table 
-                        :items="usuarios" 
+                    <v-data-table
+                        :items="usuarios"
                         :headers="headers"
                         :loading="loading"
                     >
                         <template v-slot:item.actions={item}>
+                            <v-icon color="primary" @click="$router.push(`/usuarios/${item.idUsuarios}`)">mdi-pencil</v-icon>
                             <v-icon color="red" @click="activarEliminar(item)">mdi-delete</v-icon>
                         </template>
                     </v-data-table>
@@ -75,25 +76,26 @@ export default {
                text: 'Correo electrónico',
                align: 'start',
                sortable: true,
-               value: 'correo' 
+               value: 'correo'
             },
             {
                text: 'Nombre',
                align: 'start',
                sortable: true,
-               value: 'nombre' 
+               value: 'nombre'
             },
             {
                text: 'Acciones',
                align: 'center',
                sortable: false,
-               value: 'actions' 
+               value: 'actions'
             },
         ]
     }),
 
     async beforeMount() {
-        this.cargarLista()
+        this.$store.commit('setTitle',"Usuarios");
+        await this.cargarLista()
     },
 
     methods: {
@@ -113,7 +115,7 @@ export default {
                 this.mostrarDialogoEliminar = false
                 this.cargarLista()
             } catch (error) {
-                
+
             }
         },
 

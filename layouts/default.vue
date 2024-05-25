@@ -2,8 +2,7 @@
   <v-app dark>
     <v-navigation-drawer
       v-model="drawer"
-      :mini-variant="miniVariant"
-      :clipped="clipped"
+      clipped
       fixed
       app
     >
@@ -22,7 +21,7 @@
             <v-list-item-title>{{ item.title }}</v-list-item-title>
           </v-list-item-content>
         </v-list-item>
-        
+
         <v-list-item @click="logout">
           <v-list-item-action>
             <v-icon>mdi-logout</v-icon>
@@ -33,18 +32,21 @@
         </v-list-item>
       </v-list>
     </v-navigation-drawer>
-    <v-app-bar :clipped-left="clipped" fixed app>
+    <v-app-bar :clipped-left="true" fixed app>
       <v-app-bar-nav-icon @click.stop="drawer = !drawer" />
-      <v-toolbar-title>{{ title }}</v-toolbar-title>
+      <v-toolbar-title>{{ $store.state.title }}</v-toolbar-title>
     </v-app-bar>
     <v-main>
       <v-container>
         <Nuxt />
       </v-container>
     </v-main>
-    <v-footer :absolute="!fixed" app>
+    <v-footer app>
       <span>&copy; {{ new Date().getFullYear() }}</span>
     </v-footer>
+    <v-snackbar v-for="snackbar in messages" v-bind="snackbar" right>
+      {{ snackbar.message }}
+    </v-snackbar>
   </v-app>
 </template>
 
@@ -53,9 +55,14 @@ export default {
   name: 'DefaultLayout',
   data() {
     return {
-      clipped: true,
+      messages: [
+        {
+          value: false,
+          message: 'Test',
+          color: 'error'
+        }
+      ],
       drawer: false,
-      fixed: true,
       items: [
         {
           icon: 'mdi-apps',
@@ -68,10 +75,6 @@ export default {
           to: '/usuarios',
         },
       ],
-      miniVariant: false,
-      right: true,
-      rightDrawer: false,
-      title: 'Vuetify.js',
     }
   },
 
@@ -80,6 +83,14 @@ export default {
       this.$auth.logout()
       this.$router.push('/login')
     }
+  },
+
+  beforeMount() {
+    this.$nuxt.$on('show-snackbar', (color, message) => {
+      this.messages.push({
+        color, message, value: true
+      })
+    })
   }
 }
 </script>
