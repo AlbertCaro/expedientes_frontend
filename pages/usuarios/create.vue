@@ -52,6 +52,10 @@ export default {
         showPasswordError: false
     }),
 
+    beforeMount() {
+        this.$store.commit('cambiarTitulo', "Crear usuario")
+    },
+
     methods: {
         async guardarUsuario() {
             this.showPasswordError = false;
@@ -65,8 +69,10 @@ export default {
                 const response = await this.$axios.post('/usuarios', this.usuario);
 
                 this.$router.push('/usuarios')
-            } catch (error) {
                 
+                this.$nuxt.$emit('show-snackbar', 'success', "Usuario creado correctamente")
+            } catch (error) {
+                this.$nuxt.$emit('show-snackbar', 'error', error.response.data.message)
             }
         }
     }

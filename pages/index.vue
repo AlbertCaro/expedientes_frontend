@@ -78,6 +78,8 @@ export default {
   },
 
   beforeMount() {
+    this.$store.commit('cambiarTitulo', "Inicio")
+
     this.$nuxt.$on('eliminar-institucion', (index) => {
       this.instituciones.splice(index, 1)
     })
@@ -90,7 +92,7 @@ export default {
   },
 
   methods: {
-      guardarInstitucion () {
+      guardarInstitucion(): void {
         const isValid = this.$refs.formGuardado.validate()
 
         if (!isValid) return

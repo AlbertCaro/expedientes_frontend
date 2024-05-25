@@ -22,7 +22,7 @@ export default {
   },
   data() {
     return {
-      pageNotFound: '404 Not Found',
+      pageNotFound: '404 No se encontró la ruta',
       otherError: 'An error occurred',
     }
   },

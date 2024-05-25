@@ -2,8 +2,7 @@
   <v-app dark>
     <v-navigation-drawer
       v-model="drawer"
-      :mini-variant="miniVariant"
-      :clipped="clipped"
+      clipped
       fixed
       app
     >
@@ -33,29 +32,30 @@
         </v-list-item>
       </v-list>
     </v-navigation-drawer>
-    <v-app-bar :clipped-left="clipped" fixed app>
+    <v-app-bar fixed app>
       <v-app-bar-nav-icon @click.stop="drawer = !drawer" />
-      <v-toolbar-title>{{ title }}</v-toolbar-title>
+      <v-toolbar-title>{{ $store.state.titulo }}</v-toolbar-title>
     </v-app-bar>
     <v-main>
       <v-container>
         <Nuxt />
       </v-container>
     </v-main>
-    <v-footer :absolute="!fixed" app>
+    <v-footer app>
       <span>&copy; {{ new Date().getFullYear() }}</span>
     </v-footer>
+    <v-snackbar v-for="message in messages" v-bind="message" right>
+      {{ message.text }}
+    </v-snackbar>
   </v-app>
 </template>
 
-<script>
+<script lang="ts">
 export default {
   name: 'DefaultLayout',
   data() {
     return {
-      clipped: true,
       drawer: false,
-      fixed: true,
       items: [
         {
           icon: 'mdi-apps',
@@ -68,11 +68,18 @@ export default {
           to: '/usuarios',
         },
       ],
-      miniVariant: false,
-      right: true,
-      rightDrawer: false,
-      title: 'Vuetify.js',
+      messages: []
     }
+  },
+
+  beforeMount() {
+    this.$nuxt.$on('show-snackbar', (color: string, text: string) => {
+      this.messages.push({
+        value: true,
+        color, 
+        text,
+      })
+    })
   },
 
   methods: {

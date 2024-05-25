@@ -24,6 +24,7 @@
                         :loading="loading"
                     >
                         <template v-slot:item.actions={item}>
+                            <v-icon color="primary" left @click="$router.push(`/usuarios/${item.idUsuarios}`)">mdi-pencil</v-icon>
                             <v-icon color="red" @click="activarEliminar(item)">mdi-delete</v-icon>
                         </template>
                     </v-data-table>
@@ -65,6 +66,10 @@
 export default {
     name: "UsuariosIndex",
 
+    head: {
+        title: "Listar usuarios"
+    },
+
     data: () => ({
         usuarios: [],
         usuarioEliminar: null,
@@ -93,6 +98,7 @@ export default {
     }),
 
     async beforeMount() {
+        this.$store.commit('cambiarTitulo', "Listado de usuarios")
         this.cargarLista()
     },
 
@@ -112,8 +118,9 @@ export default {
 
                 this.mostrarDialogoEliminar = false
                 this.cargarLista()
+                this.$nuxt.$emit('show-snackbar', 'success', response.data.message)
             } catch (error) {
-                
+                this.$nuxt.$emit('show-snackbar', 'error', error.response.data.message)
             }
         },
 
